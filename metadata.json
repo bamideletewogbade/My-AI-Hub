@@ -1,0 +1,6 @@
+{
+  "name": "The Hub",
+  "description": "An agentic personal portfolio, blog, and tool showcase built with a multi-agent backend and persistent Bishop's Soul Companion.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
