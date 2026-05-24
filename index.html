@@ -3,9 +3,120 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+
+    <!-- Primary Meta Tags -->
+    <title>The Hub — Agentic Portfolio &amp; Tool Showcase by Bishop</title>
+    <meta name="title" content="The Hub — Agentic Portfolio &amp; Tool Showcase by Bishop" />
+    <meta name="description" content="An agentic personal portfolio, blog, and tool showcase built with a multi-agent backend and persistent AI companion. Built by Bishop in Accra, Ghana." />
+    <meta name="keywords" content="AI, agents, portfolio, tools, Ghana, Accra, developer, fintech, multi-agent, LLM" />
+    <meta name="author" content="Bishop" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://ai.studio/apps/9bcbf5db-dac6-4807-825e-af65ce975836" />
+    <meta property="og:title" content="The Hub — Agentic Portfolio &amp; Tool Showcase by Bishop" />
+    <meta property="og:description" content="An agentic personal portfolio, blog, and tool showcase built with a multi-agent backend and persistent AI companion. Built by Bishop in Accra, Ghana." />
+    <meta property="og:image" content="/og-image.svg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/svg+xml" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://ai.studio/apps/9bcbf5db-dac6-4807-825e-af65ce975836" />
+    <meta property="twitter:title" content="The Hub — Agentic Portfolio &amp; Tool Showcase by Bishop" />
+    <meta property="twitter:description" content="An agentic personal portfolio, blog, and tool showcase built with a multi-agent backend and persistent AI companion. Built by Bishop in Accra, Ghana." />
+    <meta property="twitter:image" content="/og-image.svg" />
+
+    <!-- Splash Screen Styles -->
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+      #splash-screen {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        background: #0a0a0a;
+        transition: opacity 0.6s ease, visibility 0.6s ease;
+        font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+      }
+      #splash-screen.fade-out {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+      #splash-screen .splash-zap {
+        font-size: 48px;
+        width: 72px;
+        height: 72px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #10b981, #14b8a6);
+        border-radius: 18px;
+        box-shadow: 0 0 40px rgba(16,185,129,0.2);
+        animation: splash-pulse 2s ease-in-out infinite;
+      }
+      @keyframes splash-pulse {
+        0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(16,185,129,0.2); }
+        50% { transform: scale(1.05); box-shadow: 0 0 60px rgba(16,185,129,0.3); }
+      }
+      #splash-screen .splash-brand {
+        font-size: 28px;
+        font-weight: 600;
+        color: #ffffff;
+        letter-spacing: -0.02em;
+      }
+      #splash-screen .splash-tagline {
+        font-size: 13px;
+        color: #737373;
+        font-family: 'JetBrains Mono', 'Courier New', monospace;
+        animation: splash-blink 1.4s ease-in-out infinite;
+      }
+      @keyframes splash-blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
+      }
+      #splash-screen .splash-loader {
+        width: 160px;
+        height: 3px;
+        background: rgba(255,255,255,0.06);
+        border-radius: 2px;
+        overflow: hidden;
+        margin-top: 8px;
+      }
+      #splash-screen .splash-loader-bar {
+        width: 40%;
+        height: 100%;
+        background: linear-gradient(90deg, #10b981, #34d399);
+        border-radius: 2px;
+        animation: splash-load 1.2s ease-in-out infinite;
+      }
+      @keyframes splash-load {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(350%); }
+      }
+    </style>
   </head>
   <body>
+    <!-- Splash Screen — renders instantly before React loads -->
+    <div id="splash-screen">
+      <div class="splash-zap">⚡</div>
+      <div class="splash-brand">The Hub</div>
+      <div class="splash-tagline">Initializing agent mesh...</div>
+      <div class="splash-loader">
+        <div class="splash-loader-bar"></div>
+      </div>
+    </div>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

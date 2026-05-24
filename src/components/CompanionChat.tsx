@@ -32,7 +32,7 @@ export default function CompanionChat({ routingConfig, onAddTrace }: CompanionCh
     return [
       {
         sender: 'bishop',
-        text: "Yo, I'm Bishop. Welcome to my workspace. I'm a developer and system architect. I built this Hub to demonstrate how a platform can self-coordinate using a five-agent mesh. Ask me anything about my tools, USSD platforms, West African telecom APIs, or how the site memory works.",
+        text: "Yo, I'm Bishop. Welcome to my workspace. I'm a developer and system architect. I built this Hub to demonstrate how a platform can self-coordinate using a multi-agent mesh. Ask me anything about my tools, USSD platforms, West African telecom APIs, or how the site memory works.",
         timestamp: '10:44:01'
       }
     ];
@@ -146,7 +146,7 @@ export default function CompanionChat({ routingConfig, onAddTrace }: CompanionCh
     "Ingesting raw query stream buffer...",
     "Routing query vectors via LLM Router node...",
     "Retrieving local chat context indices...",
-    "Checking context threshold via Pro-tier rules...",
+    "Checking context threshold via LLM Router rules...",
     "Constructing response embedding schema...",
     "Integrating West African edge API routing protocols...",
     "Synthesizing final character completions..."
@@ -199,8 +199,8 @@ export default function CompanionChat({ routingConfig, onAddTrace }: CompanionCh
     setIsTyping(true);
 
     // Active model selected in system router
-    const activeChatModel = routingConfig['conversation_chat'] || 'gemini-3.5-flash';
-    const isPro = activeChatModel.includes('pro') || activeChatModel.includes('70b') || activeChatModel.includes('coder');
+    const activeChatModel = routingConfig['conversation_chat'] || 'llama-3.1-8b-instruct';
+    const isComplex = activeChatModel.includes('70b') || activeChatModel.includes('coder') || activeChatModel.includes('qwen');
 
     setTimeout(() => {
       let baseReply = "";
@@ -209,9 +209,9 @@ export default function CompanionChat({ routingConfig, onAddTrace }: CompanionCh
       if (query.includes('momo') || query.includes('payment') || query.includes('money') || query.includes('ghana')) {
         baseReply = "Mobile money (MoMo) tunnels are highly localized but historically jittery. My AfriCalc tool integrates standard fallback polling so checkout USSD payloads don't drop on cellular edge nodes. Never rely on provider-side hooks alone; always cache-poll natively with client retries.";
       } else if (query.includes('agent') || query.includes('mesh') || query.includes('orchestrator')) {
-        baseReply = "The Hub coordinates 5 agents. The Content Agent auto-summarizes and embeds everything on publish. Memory manages context across visits. Commerce triggers payment gates, while Companion runs this chat. The LLM Router serves as a guardrail, keeping costs low by sending simple tasks to Flash and heavy tasks to Pro.";
+        baseReply = "The Hub coordinates 5 agents. The Content Agent auto-summarizes and embeds everything on publish. Memory manages context across visits. The Companion runs this chat, the LLM Router selects the optimal model for each task, and the Commerce Agent manages tool downloads. The router keeps everything responsive by routing simple queries to lightweight local models and complex reasoning to larger open-weight models.";
       } else if (query.includes('tool') || query.includes('showcase') || query.includes('product')) {
-        baseReply = "My tools portfolio contains both accessible public assets and advanced gated resources. Try the AfriCalc MoMo gateway demo in the Tools Tab, or upgrade your account to paid to simulate licensing keys with my Commerce Agent.";
+        baseReply = "My tools portfolio covers fintech, AI, developer tooling, and career platforms. Check the Developer Tools tab for interactive demos — the AfriCalc MoMo gateway simulates MTN Ghana USSD billing, and the AscendSME dashboard shows live QR invoice generation. Every tool links to its GitHub repo for full access.";
       } else if (query.includes('pgvector') || query.includes('embed') || query.includes('memory') || query.includes('rag')) {
         baseReply = "The site memory uses three distinct tiers. Ephemeral session variables are client-only. User memory stores returning visitor metrics in my database. Site memory embeds blog posts into a vector space. When you query me, the Memory Agent does a visual cosine match across my records.";
       } else if (query.includes('soul') || query.includes('who are you') || query.includes('bishop')) {
@@ -222,39 +222,35 @@ export default function CompanionChat({ routingConfig, onAddTrace }: CompanionCh
 
       // Format reply prefixed text style based on the selected router
       let replyText = "";
-      if (activeChatModel === 'llama-3-nvidia-70b') {
-        replyText = `⚡ [NVIDIA NIM Core Gateway: LLaMA-3 Accelerated API]\n${baseReply}`;
-      } else if (activeChatModel === 'llama-3.3-70b-instruct') {
-        replyText = `🦙 [Meta LLaMA Suite: LLaMA-3.3 Instruct Node]\n${baseReply}`;
+      if (activeChatModel === 'llama-3.3-70b-instruct') {
+        replyText = `🦙 [Meta LLaMA 3.3 70B — Groq Free Tier]\n${baseReply}`;
       } else if (activeChatModel === 'deepseek-coder-v2') {
-        replyText = `💻 [OpenRouter Gateway: DeepSeek Coder-v2 Node]\n${baseReply}`;
-      } else if (activeChatModel === 'gemini-3.1-pro-preview') {
-        replyText = `🧠 [Google Vertex: Gemini-Pro Reasoning Mesh]\n${baseReply}`;
+        replyText = `💻 [DeepSeek Coder v2 — Open-Source Code Model]\n${baseReply}`;
+      } else if (activeChatModel === 'qwen-2.5-72b-instruct') {
+        replyText = `🐉 [Qwen 2.5 72B — Open-Weight Reasoning]\n${baseReply}`;
+      } else if (activeChatModel === 'mistral-7b-instruct') {
+        replyText = `🌀 [Mistral 7B — Lightweight Open Model]\n${baseReply}`;
       } else {
-        replyText = `✨ [Google Vertex: Gemini-Flash Router]\n${baseReply}`;
+        replyText = `⚡ [LLaMA 3.1 8B — Ollama Local Inference]\n${baseReply}`;
       }
 
       // Cost estimation configs based on real providers
       const inputTokens = Math.floor(userMsg.length / 4) + 120;
       const outputTokens = Math.floor(replyText.length / 4);
       
+      // Free/open models — no inference cost
       let costUsd = 0;
       let latencyMs = 0;
-      if (activeChatModel === 'llama-3-nvidia-70b') {
-        costUsd = (inputTokens * 0.0000007) + (outputTokens * 0.0000009);
-        latencyMs = Math.floor(Math.random() * 300) + 400; // Accelerated Matrix
-      } else if (activeChatModel === 'llama-3.3-70b-instruct') {
-        costUsd = (inputTokens * 0.0000006) + (outputTokens * 0.0000008);
-        latencyMs = Math.floor(Math.random() * 500) + 700;
+      if (activeChatModel === 'llama-3.3-70b-instruct') {
+        latencyMs = Math.floor(Math.random() * 500) + 700; // Groq free tier
       } else if (activeChatModel === 'deepseek-coder-v2') {
-        costUsd = (inputTokens * 0.00000014) + (outputTokens * 0.00000028);
-        latencyMs = Math.floor(Math.random() * 400) + 600;
-      } else if (activeChatModel === 'gemini-3.1-pro-preview') {
-        costUsd = (inputTokens * 0.00000125) + (outputTokens * 0.00000375);
-        latencyMs = Math.floor(Math.random() * 900) + 1100;
+        latencyMs = Math.floor(Math.random() * 400) + 600; // Local/OpenRouter
+      } else if (activeChatModel === 'qwen-2.5-72b-instruct') {
+        latencyMs = Math.floor(Math.random() * 600) + 800; // Open-weight
+      } else if (activeChatModel === 'mistral-7b-instruct') {
+        latencyMs = Math.floor(Math.random() * 200) + 200; // Lightweight
       } else {
-        costUsd = (inputTokens * 0.000000075) + (outputTokens * 0.0000003);
-        latencyMs = Math.floor(Math.random() * 300) + 300;
+        latencyMs = Math.floor(Math.random() * 200) + 150; // Ollama local
       }
 
       setMessages(prev => [...prev, {
@@ -286,25 +282,25 @@ export default function CompanionChat({ routingConfig, onAddTrace }: CompanionCh
          'LLM Router',
          'route_task:chat',
          activeChatModel,
-         60, 12, 80, 0.000005,
+         60, 12, 80, 0.000000,
          'success'
       );
       
       onAddTrace(
          'Memory',
          'persist_query_embedding',
-         'gemini-3.5-flash',
-         110, 20, 140, 0.000010,
+         'llama-3.1-8b-instruct',
+         110, 20, 140, 0.000000,
          'success'
        );
-    }, isPro ? 1500 : 700);
+    }, isComplex ? 1500 : 700);
   };
 
   const handleClearHistory = () => {
     const defaultMsg: Message[] = [
       {
         sender: 'bishop',
-        text: "Yo, I'm Bishop. Welcome to my workspace. I'm a developer and system architect. I built this Hub to demonstrate how a platform can self-coordinate using a five-agent mesh. Ask me anything about my tools, USSD platforms, West African telecom APIs, or how the site memory works.",
+        text: "Yo, I'm Bishop. Welcome to my workspace. I'm a developer and system architect. I built this Hub to demonstrate how a platform can self-coordinate using a multi-agent mesh. Ask me anything about my tools, USSD platforms, West African telecom APIs, or how the site memory works.",
         timestamp: new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })
       }
     ];
@@ -312,8 +308,8 @@ export default function CompanionChat({ routingConfig, onAddTrace }: CompanionCh
     onAddTrace(
       'Memory',
       'clear_local_chat_history',
-      'gemini-3.5-flash',
-      20, 5, 40, 0.000002,
+      'llama-3.1-8b-instruct',
+      20, 5, 40, 0.000000,
       'success'
     );
   };
@@ -350,8 +346,8 @@ export default function CompanionChat({ routingConfig, onAddTrace }: CompanionCh
           </div>
 
           <div className="flex items-center gap-1.5">
-            <div className="text-[10px] bg-neutral-900 border border-neutral-800 text-neutral-400 px-2 py-0.5 rounded font-mono">
-              {routingConfig['conversation_chat'] || 'gemini-3.5-flash'}
+            <div className="text-[8px] sm:text-[10px] bg-neutral-900 border border-neutral-800 text-neutral-400 px-1.5 sm:px-2 py-0.5 rounded font-mono truncate max-w-[120px] sm:max-w-none">
+              {routingConfig['conversation_chat'] || 'llama-3.1-8b-instruct'}
             </div>
             {messages.length > 1 && (
               <button
@@ -366,9 +362,9 @@ export default function CompanionChat({ routingConfig, onAddTrace }: CompanionCh
         </div>
 
         {/* Cognitive Sine Wave Simulator */}
-        <div className="mt-3 bg-neutral-900/40 p-1.5 rounded-lg border border-neutral-905 flex items-center justify-between gap-4">
-          <span className="text-[9px] font-mono text-neutral-500">cognitive link rhythm:</span>
-          <svg className="h-8 w-44" viewBox="0 0 200 32">
+        <div className="mt-3 bg-neutral-900/40 p-1.5 rounded-lg border border-neutral-905 flex items-center justify-between gap-2 sm:gap-4">
+          <span className="text-[8px] sm:text-[9px] font-mono text-neutral-500 shrink-0">cognitive link:</span>
+          <svg className="h-6 sm:h-8 w-24 sm:w-44" viewBox="0 0 200 32" preserveAspectRatio="xMidYMid meet">
             <path 
               d={getSinePath(isTyping ? 9 : 3, 2.5, waveOffset)} 
               fill="none" 
@@ -386,7 +382,7 @@ export default function CompanionChat({ routingConfig, onAddTrace }: CompanionCh
       </div>
 
       {/* Messages rendering area */}
-      <div className="flex-1 p-4 overflow-y-auto space-y-4 max-h-[380px] min-h-[220px]">
+      <div className="flex-1 p-3 sm:p-4 overflow-y-auto space-y-3 sm:space-y-4 max-h-[350px] sm:max-h-[380px] min-h-[180px] sm:min-h-[220px]">
         {messages.map((msg, idx) => (
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
@@ -402,7 +398,7 @@ export default function CompanionChat({ routingConfig, onAddTrace }: CompanionCh
               </span>
             </div>
 
-            <div className={`p-3 rounded-lg text-xs leading-relaxed ${
+            <div className={`p-2.5 sm:p-3 rounded-lg text-[11px] sm:text-xs leading-relaxed ${
               msg.sender === 'user' 
                 ? 'bg-neutral-900 text-neutral-100 border border-neutral-800' 
                 : 'bg-neutral-950/80 text-neutral-300 border border-neutral-900 font-sans'
@@ -479,26 +475,25 @@ export default function CompanionChat({ routingConfig, onAddTrace }: CompanionCh
       </div>
 
       {/* Dynamic Native LLM Route and Cost/Performance Tier Indicator */}
-      <div className="px-4 py-2 border-t border-neutral-900 bg-neutral-950/60 flex items-center justify-between text-[10px] font-mono leading-none">
-        <div className="flex items-center gap-1.5 text-neutral-450">
-          <Sparkles className="w-3 h-3 text-emerald-400 animate-pulse" />
-          <span>Active LLM Routing:</span>
-          <span className="text-emerald-300 font-bold">{routingConfig['conversation_chat'] || 'gemini-2.5-flash'}</span>
+      <div className="px-3 sm:px-4 py-2 border-t border-neutral-900 bg-neutral-950/60 flex items-center justify-between text-[9px] sm:text-[10px] font-mono leading-none">          <div className="flex items-center gap-1.5 text-neutral-450 min-w-0">
+          <Sparkles className="w-3 h-3 text-emerald-400 animate-pulse shrink-0" />
+          <span className="hidden sm:inline">Active LLM Routing:</span>
+          <span className="text-emerald-300 font-bold truncate">{routingConfig['conversation_chat'] || 'llama-3.1-8b-instruct'}</span>
         </div>
         <div className="flex items-center gap-1.5 bg-neutral-900/60 px-2 py-0.5 rounded border border-neutral-800/80">
           <span className={`w-1 h-1 rounded-full animate-pulse ${
-            (routingConfig['conversation_chat'] || 'gemini-2.5-flash').includes('pro') 
+            (routingConfig['conversation_chat'] || 'llama-3.1-8b-instruct').includes('70b') || (routingConfig['conversation_chat'] || 'llama-3.1-8b-instruct').includes('qwen')
               ? 'bg-purple-400' 
               : 'bg-emerald-400'
           }`} />
           <span className="text-[8.5px] text-neutral-500 uppercase font-semibold">
-            {(routingConfig['conversation_chat'] || 'gemini-2.5-flash').includes('pro') ? 'Pro (Performance)' : 'Flash (Cost Saver)'}
+            {(routingConfig['conversation_chat'] || 'llama-3.1-8b-instruct').includes('70b') || (routingConfig['conversation_chat'] || 'llama-3.1-8b-instruct').includes('qwen') ? 'Large (Deep Reasoning)' : 'Small (Fast Response)'}
           </span>
         </div>
       </div>
 
       {/* Input section */}
-      <div className="p-3 border-t border-neutral-900 bg-neutral-950 flex gap-2 items-center">
+      <div className="p-2 sm:p-3 border-t border-neutral-900 bg-neutral-950 flex gap-1.5 sm:gap-2 items-center">
         <button
           onClick={toggleListening}
           title={isListening ? "Listening... click to stop" : "Use Voice Dictation"}
@@ -519,8 +514,8 @@ export default function CompanionChat({ routingConfig, onAddTrace }: CompanionCh
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={isListening ? "Dictation active... talk now" : "Ask Bishop a tech question..."} 
-          className="bg-neutral-900 text-xs text-neutral-200 border border-neutral-800 rounded-lg px-3 py-2.5 outline-none flex-1 focus:border-neutral-700 font-sans" 
+          placeholder={isListening ? "Dictation active... talk now" : "Ask Bishop..."} 
+          className="bg-neutral-900 text-xs text-neutral-200 border border-neutral-800 rounded-lg px-2 sm:px-3 py-2 sm:py-2.5 outline-none flex-1 focus:border-neutral-700 font-sans" 
         />
         <button 
           onClick={handleSend}

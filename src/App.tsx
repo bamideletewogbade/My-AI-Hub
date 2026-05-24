@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { UserRole, AgentTrace } from './types';
+import { AgentTrace } from './types';
 import { INITIAL_AGENTS, INITIAL_TRACES, BISHOP_SOUL } from './data/mockData';
 import { motion, AnimatePresence } from 'motion/react';
 import ToolsView from './components/ToolsView';
@@ -17,7 +17,6 @@ import {
   Cpu, 
   Database, 
   Sparkles, 
-  DollarSign, 
   Layers, 
   BookOpen, 
   Wrench, 
@@ -26,19 +25,17 @@ import {
   Info,
   ChevronRight,
   Shield,
-  ExternalLink,
-  Lock
+  ExternalLink
 } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'tools' | 'blog' | 'console' | 'about'>('tools');
-  const [userTier, setUserTier] = useState<UserRole>('public');
   const [traces, setTraces] = useState<AgentTrace[]>(INITIAL_TRACES);
   const [routingConfig, setRoutingConfig] = useState<Record<string, string>>({
-    conversation_chat: 'gemini-3.5-flash',
-    summarize_post: 'gemini-3.5-flash',
-    classify_image: 'gemini-3.1-pro-preview',
-    payment_elevation: 'gemini-3.5-flash'
+    conversation_chat: 'llama-3.1-8b-instruct',
+    summarize_post: 'llama-3.1-8b-instruct',
+    code_review: 'deepseek-coder-v2',
+    classify_image: 'qwen-2.5-72b-instruct'
   });
 
   const handleClearTraces = () => {
@@ -55,8 +52,8 @@ export default function App() {
     handleAddTrace(
       'LLM Router',
       `reconfigure_route:${task}`,
-      'gemini-3.5-flash',
-      45, 12, 110, 0.000004,
+      'llama-3.1-8b-instruct',
+      45, 12, 110, 0.000000,
       'success'
     );
   };
@@ -92,22 +89,22 @@ export default function App() {
     <div className="min-h-screen bg-[#0a0a0a] text-neutral-100 font-sans flex flex-col justify-between selection:bg-emerald-500/30 selection:text-white">
       
       {/* HEADER SECTION */}
-      <header className="sticky top-0 z-40 bg-[#0a0a0a]/90 backdrop-blur-md border-b border-neutral-900 px-4 py-3 sm:px-6">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+      <header className="sticky top-0 z-40 bg-[#0a0a0a]/90 backdrop-blur-md border-b border-neutral-900 px-3 sm:px-6 py-2 sm:py-3">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-3">
           
           {/* Brand/Owner Indicator */}
-          <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-tr from-emerald-500 to-teal-400 p-2 rounded-lg flex items-center justify-center">
-              <Terminal className="w-5 h-5 text-neutral-950 font-bold" />
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="bg-gradient-to-tr from-emerald-500 to-teal-400 p-1.5 sm:p-2 rounded-lg flex items-center justify-center shrink-0">
+              <Terminal className="w-4 h-4 sm:w-5 sm:h-5 text-neutral-950 font-bold" />
             </div>
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="text-sm font-semibold text-white font-display tracking-tight">The Hub</span>
-                <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-neutral-900 border border-neutral-800 text-neutral-400">
-                  v1.2 // Agent Mesh Enabled
+                <span className="text-xs sm:text-sm font-semibold text-white font-display tracking-tight truncate">The Hub</span>
+                <span className="text-[8px] sm:text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-neutral-900 border border-neutral-800 text-neutral-400 shrink-0 hidden xs:inline-block">
+                  v1.3
                 </span>
               </div>
-              <p className="text-[10px] text-neutral-500 font-mono">
+              <p className="text-[9px] sm:text-[10px] text-neutral-500 font-mono truncate max-w-[200px] sm:max-w-none">
                 Platform node of builder <span className="text-emerald-400">{BISHOP_SOUL.name}</span> in Accra, GH.
               </p>
             </div>
@@ -136,107 +133,72 @@ export default function App() {
             })}
           </div>
 
-          {/* User account state mock controller */}
-          <div className="flex items-center gap-2">
-            <div className="text-right">
-              <span className="text-[10px] text-neutral-500 block font-mono">Identity Context:</span>
-              <span className="text-xs text-neutral-300 font-medium font-mono uppercase">
-                {userTier} tier
-              </span>
-            </div>
-            <div className="flex bg-neutral-900 border border-neutral-800 rounded-lg p-0.5">
-              <button 
-                onClick={() => setUserTier('public')}
-                className={`px-2 py-1 text-[9px] rounded font-mono font-bold uppercase transition-colors ${
-                  userTier === 'public' 
-                    ? 'bg-neutral-800 text-emerald-400 font-extrabold shadow-sm' 
-                    : 'text-neutral-500 hover:text-neutral-300'
-                }`}
-              >
-                Pub
-              </button>
-              <button 
-                onClick={() => setUserTier('free')}
-                className={`px-2 py-1 text-[9px] rounded font-mono font-bold uppercase transition-colors ${
-                  userTier === 'free' 
-                    ? 'bg-neutral-800 text-emerald-400 font-extrabold shadow-sm' 
-                    : 'text-neutral-500 hover:text-neutral-300'
-                }`}
-              >
-                Free
-              </button>
-              <button 
-                onClick={() => setUserTier('paid')}
-                className={`px-2 py-1 text-[9px] rounded font-mono font-bold uppercase transition-colors ${
-                  userTier === 'paid' 
-                    ? 'bg-neutral-800 text-emerald-400 font-extrabold shadow-sm' 
-                    : 'text-neutral-500 hover:text-neutral-300'
-                }`}
-              >
-                Paid
-              </button>
-            </div>
+          {/* System version badge - hide on mobile to reduce clutter */}
+          <div className="hidden sm:block text-[9px] font-mono text-neutral-500 bg-neutral-900/60 px-2 py-1 rounded border border-neutral-800">
+            v1.3 // Agent Mesh Enabled
           </div>
 
         </div>
       </header>
 
       {/* MAIN CONTAINER WORKSPACE */}
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-6 sm:px-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+      <main className="flex-1 max-w-7xl mx-auto w-full px-3 sm:px-6 py-4 sm:py-6 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-stretch">
         
         {/* LEFT COLUMN: ACTIVE VIEW ACTIONS CONTAINER */}
-        <section className="lg:col-span-8 flex flex-col gap-6">
-          
-          {/* NAV TABS SYSTEM BAR */}
-          <div className="flex border-b border-neutral-900 p-0.5 bg-neutral-950/45 rounded-lg border">
+        <section className="lg:col-span-8 flex flex-col gap-6">              {/* NAV TABS SYSTEM BAR */}
+          <div className="flex border-b border-neutral-900 p-0.5 bg-neutral-950/45 rounded-lg border overflow-x-auto [&::-webkit-scrollbar]:hidden">
             <button
               onClick={() => setActiveTab('tools')}
-              className={`flex-1 py-2.5 px-3 rounded text-xs font-semibold tracking-tight transition-all flex items-center justify-center gap-1.5 ${
+              className={`flex-1 py-2.5 px-2 sm:px-3 rounded text-[10px] sm:text-xs font-semibold tracking-tight transition-all flex items-center justify-center gap-1 sm:gap-1.5 whitespace-nowrap ${
                 activeTab === 'tools'
                   ? 'bg-neutral-900 text-emerald-400 border border-neutral-800 shadow-sm font-bold'
                   : 'text-neutral-400 hover:text-white'
               }`}
             >
-              <Wrench className="w-4 h-4" />
-              Developer Tools
+              <Wrench className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+              <span className="hidden sm:inline">Developer Tools</span>
+              <span className="sm:hidden">Tools</span>
             </button>
             <button
               onClick={() => setActiveTab('blog')}
-              className={`flex-1 py-2.5 px-3 rounded text-xs font-semibold tracking-tight transition-all flex items-center justify-center gap-1.5 ${
+              className={`flex-1 py-2.5 px-2 sm:px-3 rounded text-[10px] sm:text-xs font-semibold tracking-tight transition-all flex items-center justify-center gap-1 sm:gap-1.5 whitespace-nowrap ${
                 activeTab === 'blog'
                   ? 'bg-neutral-900 text-emerald-400 border border-neutral-800 shadow-sm font-bold'
                   : 'text-neutral-400 hover:text-white'
               }`}
             >
-              <BookOpen className="w-4 h-4" />
-              Technical Guides
+              <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+              <span className="hidden sm:inline">Technical Guides</span>
+              <span className="sm:hidden">Blog</span>
             </button>
             <button
               onClick={() => setActiveTab('console')}
-              className={`flex-1 py-2.5 px-3 rounded text-xs font-semibold tracking-tight transition-all flex items-center justify-center gap-1.5 ${
+              className={`flex-1 py-2.5 px-2 sm:px-3 rounded text-[10px] sm:text-xs font-semibold tracking-tight transition-all flex items-center justify-center gap-1 sm:gap-1.5 whitespace-nowrap ${
                 activeTab === 'console'
                   ? 'bg-neutral-900 text-emerald-400 border border-neutral-800 shadow-sm font-bold'
                   : 'text-neutral-400 hover:text-white'
               }`}
             >
-              <Terminal className="w-4 h-4" />
-              Diagnostics Workspace
+              <Terminal className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+              <span className="hidden sm:inline">Diagnostics Workspace</span>
+              <span className="sm:hidden">Console</span>
             </button>
             <button
               onClick={() => setActiveTab('about')}
-              className={`flex-1 py-2.5 px-3 rounded text-xs font-semibold tracking-tight transition-all flex items-center justify-center gap-1.5 ${
+              className={`flex-1 py-2.5 px-2 sm:px-3 rounded text-[10px] sm:text-xs font-semibold tracking-tight transition-all flex items-center justify-center gap-1 sm:gap-1.5 whitespace-nowrap ${
                 activeTab === 'about'
                   ? 'bg-neutral-900 text-emerald-400 border border-neutral-800 shadow-sm font-bold'
                   : 'text-neutral-400 hover:text-white'
               }`}
             >
-              <Info className="w-4 h-4" />
-              The Soul File
+              <Info className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+              <span className="hidden sm:inline">The Soul File</span>
+              <span className="sm:hidden">About</span>
             </button>
           </div>
 
           {/* DYNAMIC SCREEN VIEWS */}
-          <div className="bg-[#0b0b0b] border border-neutral-900 rounded-2xl p-6 shadow-xl flex-1 justify-between overflow-hidden">
+          <div className="bg-[#0b0b0b] border border-neutral-900 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-xl flex-1 justify-between overflow-hidden">
             <AnimatePresence mode="wait">
               {activeTab === 'tools' && (
                 <motion.div
@@ -247,8 +209,6 @@ export default function App() {
                   transition={{ duration: 0.2 }}
                 >
                   <ToolsView 
-                    userTier={userTier} 
-                    onChangeUserTier={setUserTier} 
                     onAddTrace={handleAddTrace} 
                   />
                 </motion.div>
@@ -368,21 +328,21 @@ export default function App() {
       </main>
 
       {/* FOOTER SECTION */}
-      <footer className="border-t border-neutral-900 bg-[#0a0a0a] px-4 py-5 sm:px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-mono text-neutral-500">
+      <footer className="border-t border-neutral-900 bg-[#0a0a0a] px-3 sm:px-6 py-4 sm:py-5">
+        <div className="max-w-7xl mx-auto flex flex-col xs:flex-row items-center justify-between gap-3 text-[10px] sm:text-xs font-mono text-neutral-500">
           
           {/* Metadata context log */}
-          <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-            <span>Accra-Glocal Central Gateway (Online)</span>
-            <span className="text-neutral-700">|</span>
-            <span>Zulu May 2026 // UTC Node</span>
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-center">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
+            <span>Accra-Glocal Gateway</span>
+            <span className="text-neutral-700 hidden xs:inline">|</span>
+            <span className="hidden xs:inline">Zulu May 2026</span>
           </div>
 
           {/* Micro documentation references */}
-          <div className="flex items-center gap-4">
-            <span className="text-neutral-600">No telemetry larping. Real tools workspace.</span>
-            <span className="text-neutral-700">|</span>
+          <div className="flex items-center gap-2 sm:gap-4 flex-wrap justify-center">
+            <span className="text-neutral-600 hidden sm:inline">No telemetry larping.</span>
+            <span className="text-neutral-700 hidden sm:inline">|</span>
             <a 
               href="#companion-chat" 
               className="text-neutral-400 hover:text-emerald-400 transition-colors flex items-center gap-1.5"

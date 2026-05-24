@@ -79,7 +79,7 @@ export default function AgentMesh() {
         name: tool.title,
         type: 'tool',
         details: tool.description,
-        status: tool.tier === 'paid' ? 'Licensed tier' : 'Open ecosystem',
+        status: 'Open ecosystem',
         metric: `${tool.downloads} global installs`
       });
     });
@@ -614,7 +614,7 @@ export default function AgentMesh() {
     <div className="bg-neutral-950/25 border border-neutral-900 rounded-2xl grid grid-cols-1 lg:grid-cols-12 overflow-hidden shadow-2xl">
       
       {/* GRAPH CANVAS WRAPPER - 8 columns desk */}
-      <div className="lg:col-span-8 p-4 flex flex-col justify-between relative min-h-[380px] border-b lg:border-b-0 lg:border-r border-neutral-900">
+      <div className="lg:col-span-8 p-3 sm:p-4 flex flex-col justify-between relative min-h-[300px] sm:min-h-[380px] border-b lg:border-b-0 lg:border-r border-neutral-900">
         
         {/* Interactive Filters Bar */}
         <div className="flex flex-wrap items-center justify-between gap-2.5 z-10">
@@ -725,7 +725,7 @@ export default function AgentMesh() {
             <span className="text-[9px] text-neutral-500 font-normal italic">Hover or click to isolate families</span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:gap-2">
             {[
               { type: 'agent', label: 'Agents', stroke: '#10b981', bg: 'bg-emerald-500/5 hover:bg-emerald-500/10', text: 'text-emerald-400 border-emerald-500/20', glyph: '⚡', desc: 'Core Models' },
               { type: 'tool', label: 'Code Tools', stroke: '#06b6d4', bg: 'bg-cyan-500/5 hover:bg-cyan-500/10', text: 'text-cyan-400 border-cyan-500/20', glyph: '⚙️', desc: 'API Plugins' },
@@ -784,7 +784,7 @@ export default function AgentMesh() {
       </div>
 
       {/* DETAIL META EXPORTER PANEL - 4 columns desk */}
-      <div className="lg:col-span-4 p-5 bg-neutral-950/50 flex flex-col justify-between space-y-5 text-left">
+      <div className="lg:col-span-4 p-4 sm:p-5 bg-neutral-950/50 flex flex-col justify-between space-y-5 text-left">
         
         {/* Node Inspections Content */}
         <div className="space-y-4">

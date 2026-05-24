@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d0d0d"/>
+      <stop offset="100%" stop-color="#0a0a0a"/>
+    </linearGradient>
+    <linearGradient id="glow1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(16,185,129,0.08)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </linearGradient>
+    <linearGradient id="glow2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(45,212,191,0.05)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </linearGradient>
+    <linearGradient id="zapGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#14b8a6"/>
+    </linearGradient>
+    <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="50%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#14b8a6"/>
+    </linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M 48 0 L 0 0 0 48" fill="none" stroke="rgba(255,255,255,0.015)" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)" rx="0"/>
+  
+  <!-- Grid overlay -->
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- Ambient glow top-right -->
+  <circle cx="1100" cy="200" r="300" fill="url(#glow1)"/>
+  
+  <!-- Ambient glow bottom-left -->
+  <circle cx="200" cy="500" r="250" fill="url(#glow2)"/>
+
+  <!-- Border -->
+  <rect x="30" y="30" width="1140" height="570" rx="32" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+
+  <!-- Top section: Logo + Brand + Version -->
+  <!-- Zap icon box -->
+  <rect x="86" y="86" width="56" height="56" rx="16" fill="url(#zapGrad)"/>
+  <text x="114" y="124" font-family="Arial, sans-serif" font-size="28" text-anchor="middle" fill="#0a0a0a">⚡</text>
+
+  <!-- Brand name -->
+  <text x="162" y="116" font-family="'Space Grotesk', Arial, sans-serif" font-size="40" font-weight="600" fill="#ffffff" letter-spacing="-0.02">The Hub</text>
+  <text x="162" y="142" font-family="'Space Grotesk', Arial, sans-serif" font-size="16" fill="#10b981" font-weight="500">Agentic Portfolio · Tool Showcase · AI Companion</text>
+
+  <!-- Version badge -->
+  <rect x="870" y="92" width="200" height="32" rx="16" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+  <text x="970" y="114" font-family="'Courier New', monospace" font-size="13" fill="#737373" text-anchor="middle" letter-spacing="0.04">v1.3 // AGENT MESH</text>
+
+  <!-- Center content -->
+  <!-- Title -->
+  <text x="86" y="280" font-family="'Space Grotesk', Arial, sans-serif" font-size="52" font-weight="700" fill="#ffffff" letter-spacing="-0.03">Building hyper-focused systems where</text>
+  <text x="86" y="345" font-family="'Space Grotesk', Arial, sans-serif" font-size="52" font-weight="700" fill="url(#titleGrad)" letter-spacing="-0.03">intelligence is a layer, not a feature</text>
+
+  <!-- Description -->
+  <text x="86" y="400" font-family="Arial, sans-serif" font-size="18" fill="#a3a3a3">A multi-agent workspace by Bishop — featuring Content, Memory, Companion,</text>
+  <text x="86" y="430" font-family="Arial, sans-serif" font-size="18" fill="#a3a3a3">and LLM Router agents coordinating across dev tools, guides, and AI chat.</text>
+
+  <!-- Bottom section -->
+  <!-- Agent dots -->
+  <circle cx="86" cy="530" r="4" fill="#10b981"/>
+  <text x="98" y="534" font-family="'Courier New', monospace" font-size="12" fill="#737373">Content Agent</text>
+
+  <circle cx="230" cy="530" r="4" fill="#10b981"/>
+  <text x="242" y="534" font-family="'Courier New', monospace" font-size="12" fill="#737373">Memory Agent</text>
+
+  <circle cx="374" cy="530" r="4" fill="#10b981"/>
+  <text x="386" y="534" font-family="'Courier New', monospace" font-size="12" fill="#737373">Companion Agent</text>
+
+  <circle cx="518" cy="530" r="4" fill="#10b981"/>
+  <text x="530" y="534" font-family="'Courier New', monospace" font-size="12" fill="#737373">LLM Router</text>
+
+  <!-- Location -->
+  <text x="930" y="534" font-family="'Courier New', monospace" font-size="13" fill="#525252">🇬🇭  Accra, Ghana — Glocal Node Online</text>
+</svg>

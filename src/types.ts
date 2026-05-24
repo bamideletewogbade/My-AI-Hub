@@ -1,5 +1,3 @@
-export type UserRole = 'public' | 'free' | 'paid';
-
 export interface Agent {
   id: string;
   name: string;
@@ -14,10 +12,9 @@ export interface Tool {
   title: string;
   slug: string;
   description: string;
-  tier: 'public' | 'free' | 'paid';
-  price: string;
   tags: string[];
   downloads: number;
+  repoUrl?: string;
 }
 
 export interface Post {

@@ -2,10 +2,120 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Post } from '../types';
 import { INITIAL_POSTS } from '../data/mockData';
 import { motion, AnimatePresence } from 'motion/react';
-import { BookOpen, Calendar, Clock, ChevronRight, User, AlertCircle, Sparkles, Wand2 } from 'lucide-react';
+import { BookOpen, Calendar, Clock, ChevronRight, User, AlertCircle, Sparkles, Wand2, Terminal } from 'lucide-react';
 
 interface BlogViewProps {
   onAddTrace: (agent: 'Content' | 'Memory' | 'Companion' | 'Commerce' | 'LLM Router', task: string, model: string, inputTokens: number, outputTokens: number, latencyMs: number, costUsd: number, result: 'success' | 'failure') => void;
+}
+
+// Lightweight body renderer: code blocks, inline code, headers, paragraphs
+function renderBody(body: string): React.ReactNode[] {
+  const blocks: React.ReactNode[] = [];
+  let key = 0;
+
+  // Split on triple backtick blocks (with optional language hint)
+  const parts = body.split(/(```\w*\n[\s\S]*?```)/g);
+
+  for (const part of parts) {
+    if (part.startsWith('```')) {
+      // Code block
+      const inner = part
+        .replace(/```\w*\n?/, '')
+        .replace(/```$/, '')
+        .trimEnd();
+      blocks.push(
+        <div key={key++} className="bg-neutral-950 border border-neutral-800 rounded-lg overflow-hidden my-3">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-neutral-900 border-b border-neutral-800 text-[10px] text-neutral-500 font-mono">
+            <Terminal className="w-3 h-3" />
+            <span>terminal</span>
+          </div>
+          <pre className="p-3 text-[12px] leading-relaxed font-mono text-emerald-300 overflow-x-auto"><code>{inner}</code></pre>
+        </div>
+      );
+    } else if (part.trim()) {
+      // Regular text — split on double newlines for paragraphs
+      const paragraphs = part.split(/\n\n+/);
+      for (const para of paragraphs) {
+        if (!para.trim()) continue;
+        // Detect markdown headers
+        const headerMatch = para.match(/^(#{1,3})\s+(.+)$/m);
+        if (headerMatch) {
+          const level = headerMatch[1].length;
+          const text = headerMatch[2];
+          const sizeClass = level === 1 ? 'text-base font-bold' : level === 2 ? 'text-sm font-semibold' : 'text-xs font-semibold';
+          blocks.push(
+            <h3 key={key++} className={`${sizeClass} text-emerald-400 font-display mt-4 mb-2 tracking-tight`}>
+              {text}
+            </h3>
+          );
+          continue;
+        }
+        // Detect horizontal rules (---, ***, ___ with 3+ chars)
+        if (/^[-*_]{3,}$/.test(para.trim())) {
+          blocks.push(<hr key={key++} className="border-t border-neutral-800 my-4" />);
+          continue;
+        }
+        // Detect pipe tables (simple line-by-line)
+        if (para.trim().startsWith('|') && para.trim().endsWith('|')) {
+          const rows = para.trim().split('\n').filter(r => r.trim());
+          if (rows.length >= 2) {
+            const headerCells = rows[0].split('|').filter(c => c.trim()).map(c => c.trim());
+            const dataRows = rows.slice(2).map(r => r.split('|').filter(c => c.trim()).map(c => c.trim()));
+            blocks.push(
+              <div key={key++} className="overflow-x-auto my-3">
+                <table className="w-full text-[11px] font-mono border-collapse">
+                  <thead>
+                    <tr className="border-b border-emerald-500/20">
+                      {headerCells.map((h, i) => (
+                        <th key={i} className="text-left px-2 py-1.5 text-emerald-400 font-semibold">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {dataRows.map((row, ri) => (
+                      <tr key={ri} className="border-b border-neutral-900/60">
+                        {row.map((cell, ci) => (
+                          <td key={ci} className="px-2 py-1.5 text-neutral-300">{cell}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            );
+            continue;
+          }
+        }
+        // Inline code: backtick-wrapped
+        const segments = para.split(/(`[^`]+`)/g);
+        const children: React.ReactNode[] = [];
+        let idx = 0;
+        for (const seg of segments) {
+          if (seg.startsWith('`') && seg.endsWith('`')) {
+            children.push(
+              <code key={idx++} className="px-1.5 py-0.5 bg-neutral-900 border border-neutral-800 rounded text-[11px] font-mono text-emerald-400">
+                {seg.slice(1, -1)}
+              </code>
+            );
+          } else if (seg.trim()) {
+            // Split segments with single newlines (line breaks within a paragraph)
+            const lines = seg.split(/\n(?!\n)/);
+            lines.forEach((line, li) => {
+              if (li > 0) children.push(<br key={`br-${idx}`} />);
+              children.push(<span key={idx++}>{line}</span>);
+            });
+          }
+        }
+        blocks.push(
+          <p key={key++} className="text-xs text-neutral-300 leading-relaxed font-sans mb-3 last:mb-0">
+            {children}
+          </p>
+        );
+      }
+    }
+  }
+
+  return blocks;
 }
 
 export default function BlogView({ onAddTrace }: BlogViewProps) {
@@ -85,8 +195,14 @@ export default function BlogView({ onAddTrace }: BlogViewProps) {
         mockSummary = "Content summarized by AI Agent: African telecommunication environments are contextually constrained by standard network jitter and high latency. Systems should prioritize light optimistic local writes coupled with exponential status-polling strategies to ensure seamless, crash-free Momo purchases.";
       } else if (post.id === '2') {
         mockSummary = "Content summarized by AI Agent: Ditch monolithic lock architectures. Instead, build decentralized node meshes where coordinate nodes carry independent storage buffers. Lightweight log synchronization resolves state issues with zero race hazards.";
-      } else {
+      } else if (post.id === '3') {
         mockSummary = "Content summarized by AI Agent: Standalone serverless microcontainers are cost-effective but run restricted heap pools. By fine-tuning pgvector parameters with small chunk margins, we can keep index similarity operations fast and economical.";
+      } else if (post.id === '4') {
+        mockSummary = "Content summarized by AI Agent: Freebuff is a free agentic CLI that routes prompts through a multi-model mesh — DeepSeek v4-Flash, Gemini Pro, Claude Opus. No API key needed, no subscription. The business model is lightweight terminal ads every 10th response, with zero tracking or data collection. Install with `npm i -g freebuff`.";
+      } else if (post.id === '5') {
+        mockSummary = "Content summarized by AI Agent: AscendSME is a three-platform business OS for Ghanaian SMEs — React web app, Flutter mobile app, and Remotion launch trailer — all sharing a single Supabase backend. Four AI agents (Diagnostic, WhatsApp Engagement, Document Intelligence, Credit Scoring) operate across surfaces with automatic fallback chains through Gemini, Groq, and OpenRouter. The agent architecture provides graceful degradation, unified logging, and cross-platform reuse.";
+      } else {
+        mockSummary = "Content summarized by AI Agent: Node processed and indexed into the Hub's knowledge graph.";
       }
 
       setSummarizedText(mockSummary);
@@ -249,21 +365,21 @@ export default function BlogView({ onAddTrace }: BlogViewProps) {
 
             {/* Article Header */}
             <div className="space-y-3">
-              <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/15 font-mono">
+              <span className="text-[9px] sm:text-[10px] uppercase font-bold tracking-wider px-2 sm:px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/15 font-mono">
                 {selectedPost.category}
               </span>
-              <h1 className="text-2xl lg:text-3xl font-display font-semibold text-white tracking-tight leading-tight">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-semibold text-white tracking-tight leading-tight">
                 {selectedPost.title}
               </h1>
-              <p className="text-xs text-neutral-400 italic font-sans leading-relaxed border-l-2 border-emerald-500 pl-3.5 py-0.5">
+              <p className="text-[11px] sm:text-xs text-neutral-400 italic font-sans leading-relaxed border-l-2 border-emerald-500 pl-2.5 sm:pl-3.5 py-0.5">
                 "{selectedPost.excerpt}"
               </p>
             </div>
 
             {/* Core Post Article Content */}
-            <div className="bg-neutral-950/20 border border-neutral-900 rounded-xl p-6 font-sans text-neutral-300 leading-relaxed space-y-4 shadow-inner relative overflow-hidden">
+            <div className="bg-neutral-950/20 border border-neutral-900 rounded-xl p-4 sm:p-6 font-sans text-neutral-300 leading-relaxed space-y-4 shadow-inner relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/1 rounded-full blur-2xl pointer-events-none"></div>
-              <p>{selectedPost.body}</p>
+              {renderBody(selectedPost.body)}
               <p className="text-neutral-400 text-xs">
                 In any standard web deployment, we default to relying exclusively on rich fiber links. But mobile-first applications deployed in local transport hubs demand an extremely pragmatic protocol. We must minimize JSON response payload boundaries, utilize tiny compression buffers (exactly 8-bit integers where feasible), and implement standard offline replication engines directly in the client context.
               </p>
@@ -273,7 +389,7 @@ export default function BlogView({ onAddTrace }: BlogViewProps) {
             </div>
 
             {/* Interactive Agent Summarizer Section */}
-            <div className="bg-neutral-950 border border-neutral-900 rounded-xl p-5 space-y-4 relative overflow-hidden">
+            <div className="bg-neutral-950 border border-neutral-900 rounded-xl p-4 sm:p-5 space-y-4 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl"></div>
               
               <div className="flex justify-between items-center">

@@ -71,40 +71,40 @@ export default function ConsoleView({ traces, onClearTraces, routingConfig, onUp
   const [testResult, setTestResult] = useState<'idle' | 'running' | 'completed'>('idle');
   const [testSuite, setTestSuite] = useState([
     {
-      id: 'nvidia',
-      name: 'NVIDIA NIM Gateway Connect',
-      provider: 'NVIDIA NIM (LLaMA 3)',
-      status: 'idle', // 'idle' | 'running' | 'success' | 'failure'
-      latency: 0,
-      brokenFlow: 'Cellular edge handoff drops packet headers under Accra node configurations (causing 1.2s lag)',
-      remediation: 'Engaging keep-alive packet padding and adaptive timeouts to bypass provider failures'
-    },
-    {
-      id: 'openrouter',
-      name: 'OpenRouter DeepSeek Exporter',
-      provider: 'OpenRouter (DeepSeek v2)',
+      id: 'llama-local',
+      name: 'LLaMA 3.1 — Ollama Local Inference',
+      provider: 'Ollama (Local)',
       status: 'idle',
       latency: 0,
-      brokenFlow: 'Proxy timeouts and rate-limiting blocks during high-volume GSM USSD serialization chunks',
-      remediation: 'Engaging transient queue buffers with exponential backoff on Accra edge route gates'
+      brokenFlow: 'Local model not loaded — may require `ollama pull llama3.1` before first use',
+      remediation: 'Auto-downloading model weights via Ollama API on first request'
     },
     {
-      id: 'llama',
-      name: 'Meta LLaMA State Consistency',
-      provider: 'Direct LLaMA 3.3 Node',
+      id: 'deepseek',
+      name: 'DeepSeek Coder v2 — Code Generation',
+      provider: 'Open-Source (Local/Groq)',
       status: 'idle',
       latency: 0,
-      brokenFlow: 'Context token allocation overrun causes message truncation on non-pro tier users',
-      remediation: 'Auto-scaling instruction bounds and performing client-side segment chunking'
+      brokenFlow: 'Context window exhaustion on large code files exceeding 32K tokens',
+      remediation: 'Chunking source files into segments and processing with sliding window'
     },
     {
-      id: 'vertex',
-      name: 'Vertex Gemini Semantic Indexer',
-      provider: 'Google Vertex Mesh',
+      id: 'llama-70b',
+      name: 'LLaMA 3.3 70B — Groq Free Tier',
+      provider: 'Groq (Free API)',
       status: 'idle',
       latency: 0,
-      brokenFlow: 'Site memory cache invalidation observed upon resetting client-side local storage parameters',
-      remediation: 'Auto-reindexing trace streams of blog posts into a fresh localized offline space'
+      brokenFlow: 'Groq free tier rate-limited to 30 requests per minute under heavy load',
+      remediation: 'Queueing requests with exponential backoff and fallback to local 8B model'
+    },
+    {
+      id: 'qwen',
+      name: 'Qwen 2.5 72B — Open-Weight Reasoning',
+      provider: 'Open-Source (via vLLM)',
+      status: 'idle',
+      latency: 0,
+      brokenFlow: 'High VRAM requirement (~140GB) for full-precision inference',
+      remediation: 'Quantizing to 4-bit via llama.cpp and distributing across consumer GPUs'
     }
   ]);
 
@@ -177,22 +177,22 @@ export default function ConsoleView({ traces, onClearTraces, routingConfig, onUp
       </div>
 
       {/* Aggregate metrics bento row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
         {/* Cost card */}
         <motion.div 
           initial={{ scale: 0.98, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.2 }}
-          className="bg-neutral-950/40 border border-neutral-900 p-4 rounded-xl space-y-1.5 hover:border-neutral-800 transition-colors"
+          className="bg-neutral-950/40 border border-neutral-900 p-3 sm:p-4 rounded-xl space-y-1.5 hover:border-neutral-800 transition-colors"
         >
           <div className="flex justify-between items-center text-neutral-550">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500">Estimated Spend</span>
-            <DollarSign className="w-3.5 h-3.5 text-emerald-405" />
+            <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider text-neutral-500">Estimated Spend</span>
+            <DollarSign className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-405" />
           </div>
-          <div className="text-xl font-mono font-semibold text-white">
+          <div className="text-base sm:text-xl font-mono font-semibold text-white truncate">
             <AnimatedNumber value={totalCost} formatter={(val) => `$${val.toFixed(5)}`} />
           </div>
-          <div className="text-[10px] text-neutral-500 font-mono leading-relaxed">
+          <div className="text-[9px] sm:text-[10px] text-neutral-500 font-mono leading-relaxed hidden sm:block">
             Tracks total tokens across model endpoints
           </div>
         </motion.div>
@@ -202,16 +202,16 @@ export default function ConsoleView({ traces, onClearTraces, routingConfig, onUp
           initial={{ scale: 0.98, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.2, delay: 0.05 }}
-          className="bg-neutral-950/40 border border-neutral-900 p-4 rounded-xl space-y-1.5 hover:border-neutral-800 transition-colors"
+          className="bg-neutral-950/40 border border-neutral-900 p-3 sm:p-4 rounded-xl space-y-1.5 hover:border-neutral-800 transition-colors"
         >
           <div className="flex justify-between items-center text-neutral-550">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500">Avg Latency</span>
-            <Clock className="w-3.5 h-3.5 text-blue-400" />
+            <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider text-neutral-500">Avg Latency</span>
+            <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-400" />
           </div>
-          <div className="text-xl font-mono font-semibold text-white">
+          <div className="text-base sm:text-xl font-mono font-semibold text-white">
             <AnimatedNumber value={avgLatency} formatter={(val) => `${Math.round(val)}ms`} />
           </div>
-          <div className="text-[10px] text-neutral-500 font-mono leading-relaxed">
+          <div className="text-[9px] sm:text-[10px] text-neutral-500 font-mono leading-relaxed hidden sm:block">
             Network RTT from Accra coordinates
           </div>
         </motion.div>
@@ -221,16 +221,16 @@ export default function ConsoleView({ traces, onClearTraces, routingConfig, onUp
           initial={{ scale: 0.98, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.2, delay: 0.1 }}
-          className="bg-neutral-950/40 border border-neutral-900 p-4 rounded-xl space-y-1.5 hover:border-neutral-800 transition-colors"
+          className="bg-neutral-950/40 border border-neutral-900 p-3 sm:p-4 rounded-xl space-y-1.5 hover:border-neutral-800 transition-colors"
         >
           <div className="flex justify-between items-center text-neutral-550">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500">Success Ratio</span>
-            <Activity className="w-3.5 h-3.5 text-emerald-500" />
+            <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider text-neutral-500">Success Ratio</span>
+            <Activity className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-500" />
           </div>
-          <div className="text-xl font-mono font-semibold text-white">
+          <div className="text-base sm:text-xl font-mono font-semibold text-white">
             <AnimatedNumber value={successRate} formatter={(val) => `${Math.round(val)}%`} />
           </div>
-          <div className="text-[10px] text-neutral-500 font-mono leading-relaxed">
+          <div className="text-[9px] sm:text-[10px] text-neutral-500 font-mono leading-relaxed hidden sm:block">
             Healthy responses without fallfalls
           </div>
         </motion.div>
@@ -240,16 +240,16 @@ export default function ConsoleView({ traces, onClearTraces, routingConfig, onUp
           initial={{ scale: 0.98, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.2, delay: 0.15 }}
-          className="bg-neutral-950/40 border border-neutral-900 p-4 rounded-xl space-y-1.5 hover:border-neutral-800 transition-colors"
+          className="bg-neutral-950/40 border border-neutral-900 p-3 sm:p-4 rounded-xl space-y-1.5 hover:border-neutral-800 transition-colors"
         >
           <div className="flex justify-between items-center text-neutral-550">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500">Active Router</span>
-            <Cpu className="w-3.5 h-3.5 text-purple-400" />
+            <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider text-neutral-500">Active Router</span>
+            <Cpu className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-purple-400" />
           </div>
-          <div className="text-xs font-mono font-medium text-emerald-300 leading-relaxed truncate">
+          <div className="text-[11px] sm:text-xs font-mono font-medium text-emerald-300 leading-relaxed truncate">
             {routingConfig['conversation_chat'] || 'gemini-3.5-flash'}
           </div>
-          <div className="text-[10px] text-neutral-500 font-mono leading-relaxed">
+          <div className="text-[9px] sm:text-[10px] text-neutral-500 font-mono leading-relaxed hidden sm:block">
             Live client conversational gateway model
           </div>
         </motion.div>
@@ -257,7 +257,7 @@ export default function ConsoleView({ traces, onClearTraces, routingConfig, onUp
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Real-time routing controller */}
-        <div className="lg:col-span-1 bg-neutral-950/50 border border-neutral-900 rounded-xl p-5 space-y-4">
+        <div className="lg:col-span-1 bg-neutral-950/50 border border-neutral-900 rounded-xl p-4 sm:p-5 space-y-4">
           <div>
             <h3 className="text-sm font-display font-medium text-white flex items-center gap-1.5">
               <Shield className="w-4 h-4 text-emerald-400" />
@@ -280,21 +280,12 @@ export default function ConsoleView({ traces, onClearTraces, routingConfig, onUp
                   <div className="grid grid-cols-1 gap-1.5 pt-1">
                     <button 
                       onClick={() => {
-                        onUpdateRoute(task, 'gemini-3.5-flash');
+                        onUpdateRoute(task, 'llama-3.1-8b-instruct');
                         setEditingTask(null);
                       }}
                       className="px-2 py-1.5 text-left bg-neutral-950 border border-neutral-800 hover:border-emerald-500 rounded text-[10px] text-neutral-200 cursor-pointer hover:bg-neutral-900 transition-colors"
                     >
-                      gemini-3.5-flash (Google Vertex - Fast, Cost-saver)
-                    </button>
-                    <button 
-                      onClick={() => {
-                        onUpdateRoute(task, 'llama-3-nvidia-70b');
-                        setEditingTask(null);
-                      }}
-                      className="px-2 py-1.5 text-left bg-neutral-950 border border-neutral-800 hover:border-emerald-500 rounded text-[10px] text-neutral-200 cursor-pointer hover:bg-neutral-900 transition-colors"
-                    >
-                      llama-3-nvidia-70b (NVIDIA NIM - GPU Accelerated)
+                      llama-3.1-8b-instruct (Ollama - Local Inference, Fast)
                     </button>
                     <button 
                       onClick={() => {
@@ -303,7 +294,7 @@ export default function ConsoleView({ traces, onClearTraces, routingConfig, onUp
                       }}
                       className="px-2 py-1.5 text-left bg-neutral-950 border border-neutral-800 hover:border-emerald-500 rounded text-[10px] text-neutral-200 cursor-pointer hover:bg-neutral-900 transition-colors"
                     >
-                      llama-3.3-70b-instruct (Meta LLaMA Suite - Rich Instruct)
+                      llama-3.3-70b-instruct (Groq Free Tier - Deep Reasoning)
                     </button>
                     <button 
                       onClick={() => {
@@ -312,16 +303,25 @@ export default function ConsoleView({ traces, onClearTraces, routingConfig, onUp
                       }}
                       className="px-2 py-1.5 text-left bg-neutral-950 border border-neutral-800 hover:border-emerald-500 rounded text-[10px] text-neutral-200 cursor-pointer hover:bg-neutral-900 transition-colors"
                     >
-                      deepseek-coder-v2 (OpenRouter - Tech & Multi-language Code v2)
+                      deepseek-coder-v2 (Open-Source - Code Specialist)
                     </button>
                     <button 
                       onClick={() => {
-                        onUpdateRoute(task, 'gemini-3.1-pro-preview');
+                        onUpdateRoute(task, 'qwen-2.5-72b-instruct');
                         setEditingTask(null);
                       }}
                       className="px-2 py-1.5 text-left bg-neutral-950 border border-neutral-800 hover:border-emerald-500 rounded text-[10px] text-neutral-200 cursor-pointer hover:bg-neutral-900 transition-colors"
                     >
-                      gemini-3.1-pro-preview (Google Vertex - Deep Reasoning)
+                      qwen-2.5-72b-instruct (Open-Weight - Math & Logic)
+                    </button>
+                    <button 
+                      onClick={() => {
+                        onUpdateRoute(task, 'mistral-7b-instruct');
+                        setEditingTask(null);
+                      }}
+                      className="px-2 py-1.5 text-left bg-neutral-950 border border-neutral-800 hover:border-emerald-500 rounded text-[10px] text-neutral-200 cursor-pointer hover:bg-neutral-900 transition-colors"
+                    >
+                      mistral-7b-instruct (Mistral - Lightweight Open Model)
                     </button>
                   </div>
                 ) : (
@@ -341,14 +341,14 @@ export default function ConsoleView({ traces, onClearTraces, routingConfig, onUp
         </div>
 
         {/* Real-time traces stream logger */}
-        <div className="lg:col-span-2 bg-neutral-950/50 border border-neutral-900 rounded-xl p-5 space-y-4 flex flex-col justify-between">
+        <div className="lg:col-span-2 bg-neutral-950/50 border border-neutral-900 rounded-xl p-4 sm:p-5 space-y-4 flex flex-col justify-between">
           <div>
             <h3 className="text-sm font-display font-medium text-white flex items-center gap-1.5">
               <Terminal className="w-4 h-4 text-emerald-400 animate-pulse" />
               Live Process Traces (agent_traces DB Stream)
             </h3>
             <p className="text-[11px] text-neutral-400 mt-1">
-              Refreshes in real-time as users browse, change tiers, or prompt the Companion. Click any trace log record to view deep token details.
+              Refreshes in real-time as users browse tools, read posts, or prompt the Companion. Click any trace log record to view deep token details.
             </p>
           </div>
 
@@ -403,7 +403,7 @@ export default function ConsoleView({ traces, onClearTraces, routingConfig, onUp
         initial={{ y: 15, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="bg-neutral-950/40 border border-neutral-900 rounded-2xl p-6 space-y-5"
+        className="bg-neutral-950/40 border border-neutral-900 rounded-xl sm:rounded-2xl p-4 sm:p-6 space-y-5"
       >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
@@ -412,7 +412,7 @@ export default function ConsoleView({ traces, onClearTraces, routingConfig, onUp
               Core AI Integrations & Diagnostic E2E Test Suite
             </h3>
             <p className="text-xs text-neutral-400 font-mono mt-1">
-              Verify swappable multi-model configurations. Runs checks against NVIDIA NIM, OpenRouter DeepSeek, Direct Meta LLaMA, and Google Vertex Mesh.
+              Verify swappable open-source model configurations. Runs checks against Ollama local inference, Groq free-tier API, and open-weight models via vLLM.
             </p>
           </div>
 
@@ -622,7 +622,7 @@ export default function ConsoleView({ traces, onClearTraces, routingConfig, onUp
               <div className="mt-4 flex items-start gap-2 text-[10px] text-neutral-500 bg-neutral-900/10 p-2.5 rounded-lg border border-neutral-905 font-sans leading-relaxed">
                 <Activity className="w-4 h-4 text-emerald-500/80 shrink-0 mt-0.5" />
                 <p>
-                  These telemetry metrics represent real-time routing evaluations. Protier routing parameters reduce latency thresholds using localized cache configurations.
+                  These telemetry metrics represent real-time routing evaluations. Localized cache configurations reduce latency thresholds for Accra-based routing nodes.
                 </p>
               </div>
 

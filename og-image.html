@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OG Image Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      width: 1200px;
+      height: 630px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0a0a0a;
+    }
+
+    .card {
+      width: 1140px;
+      height: 570px;
+      background: linear-gradient(145deg, #0d0d0d 0%, #0a0a0a 100%);
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 48px 56px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Ambient glow */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: -200px;
+      right: -200px;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .card::after {
+      content: '';
+      position: absolute;
+      bottom: -150px;
+      left: -150px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(45,212,191,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Grid pattern overlay */
+    .grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+    }
+
+    .top-section {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .zap-icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #10b981, #14b8a6);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      box-shadow: 0 0 30px rgba(16,185,129,0.15);
+      flex-shrink: 0;
+    }
+
+    .brand-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .brand-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 40px;
+      font-weight: 600;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    .brand-tag {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px;
+      color: #10b981;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+
+    .version-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: #737373;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 6px 14px;
+      border-radius: 20px;
+      letter-spacing: 0.04em;
+      margin-left: auto;
+    }
+
+    .center-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 52px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      max-width: 800px;
+    }
+
+    .title span {
+      background: linear-gradient(135deg, #10b981, #34d399, #14b8a6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .description {
+      font-family: 'Inter', sans-serif;
+      font-size: 18px;
+      color: #a3a3a3;
+      line-height: 1.6;
+      max-width: 650px;
+    }
+
+    .bottom-section {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+    }
+
+    .agents {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .agent-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px rgba(16,185,129,0.4);
+    }
+
+    .agent-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #737373;
+      letter-spacing: 0.02em;
+    }
+
+    .location {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: #525252;
+      letter-spacing: 0.03em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .location-flag {
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="grid-overlay"></div>
+    
+    <div class="top-section">
+      <div class="zap-icon">⚡</div>
+      <div class="brand-info">
+        <div class="brand-name">The Hub</div>
+        <div class="brand-tag">Agentic Portfolio &middot; Tool Showcase &middot; AI Companion</div>
+      </div>
+      <div class="version-badge">v1.3 // AGENT MESH</div>
+    </div>
+
+    <div class="center-content">
+      <div class="title">
+        Building hyper-focused systems where<br>
+        <span>intelligence is a layer, not a feature</span>
+      </div>
+      <div class="description">
+        A multi-agent workspace by Bishop &mdash; featuring Content, Memory, Companion,<br>
+        and LLM Router agents coordinating across developer tools, technical guides, and AI chat.
+      </div>
+    </div>
+
+    <div class="bottom-section">
+      <div class="agents">
+        <div class="agent-item">
+          <div class="dot"></div>
+          <span class="agent-label">Content Agent</span>
+        </div>
+        <div class="agent-item">
+          <div class="dot"></div>
+          <span class="agent-label">Memory Agent</span>
+        </div>
+        <div class="agent-item">
+          <div class="dot"></div>
+          <span class="agent-label">Companion Agent</span>
+        </div>
+        <div class="agent-item">
+          <div class="dot"></div>
+          <span class="agent-label">LLM Router</span>
+        </div>
+      </div>
+      <div class="location">
+        <span class="location-flag">🇬🇭</span>
+        Accra, Ghana &mdash; Glocal Node Online
+      </div>
+    </div>
+  </div>
+</body>
+</html>
